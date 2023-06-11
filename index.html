@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat</title>
+</head>
+
+<body>
+    <h1>簡易的グループチャット</h1>
+    <form action="" onsubmit="sendMessage(event)">
+        <label for="userName">ユーザーネーム</label>
+        <input type="text" id="userName" autocomplete="off"/>
+        <label for="messageText">テキスト</label>
+        <input type="text" id="messageText" autocomplete="off"/>
+        <button>Send</button>
+    </form>
+    <ul id="messages">
+    </ul>
+    <script>
+        var ws = new WebSocket('ws://localhost:8000/ws');
+        ws.onmessage = (event) => {
+            const messages = document.getElementById('messages');
+            const message = document.createElement('li');
+            const content = document.createTextNode(event.data);
+            message.appendChild(content);
+            messages.appendChild(message);
+        }
+        function sendMessage(event) {
+            const userName = document.getElementById('userName');
+            const messageText = document.getElementById('messageText');
+            const data = {
+                user: userName.value,
+                messageText: messageText.value
+            }
+            ws.send(JSON.stringify(data));
+            userName.value = '';
+            messageText.value = '';
+            event.preventDefault();
+        }
+    </script>
+</body>
+
+</html>
